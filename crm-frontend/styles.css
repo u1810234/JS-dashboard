@@ -1,0 +1,235 @@
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Comfortaa", cursive;
+}
+
+.theme__dark {
+  --bg-color: #000000;
+  --text-main-color: #f5f5f5;
+  --text-secondary-color: #333333;
+
+  --header-bg-color: #000000;
+  --header-text-color: #e3e3e3;
+
+  --logo-bg: #262729;
+  --logo-color: #fcfbf7;
+
+  --btn-container-bg: #333333;
+  --btn-color: #e3e3e3;
+
+  --box-shadow: none;
+
+  --input-border-color: #5c5c5c;
+  --input-bg: #202020;
+}
+
+.theme__light {
+  --bg-color: #f5f5f5;
+  --text-main-color: #b0b0b0;
+  --text-secondary-color: #333333;
+
+  --header-bg-color: #ffffff;
+  --header-text-color: #222222;
+
+  --logo-bg: #ededed;
+  --logo-color: #727272;
+
+  --btn-container-bg: #ededed;
+  --btn-color: #000000;
+
+  --box-shadow: rgba(176, 190, 197, 0.32);
+
+  --input-border-color: #c3c2be;
+  --input-bg: #ffffff;
+}
+
+body {
+  color: var(--text-main-color);
+  background-color: var(--bg-color);
+  transition: all 0.3s ease-in-out;
+}
+
+a {
+  text-decoration: none;
+}
+
+.container {
+  max-width: 1280px;
+}
+
+/* Input */
+
+.input {
+  border: 1px solid var(--input-border-color);
+  background-color: var(--input-bg);
+  color: var(--text-main-color);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  padding: 12px 16px;
+  outline: none;
+}
+
+/* Input */
+
+/* Button */
+
+.btn {
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  align-items: center;
+  outline: 0;
+  margin: 0;
+  cursor: pointer;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  letter-spacing: 0.02857em;
+  min-width: 64px;
+  padding: 12.5px 26.5px;
+  text-align: center;
+}
+
+.btn__outlined {
+  color: var(--btn-color);
+  background-color: transparent;
+  border: 1px solid var(--btn-container-bg);
+  transition: all 250ms ease-in;
+}
+
+.btn__outlined:hover {
+  color: var(--btn-color);
+  background-color: var(--btn-container-bg);
+}
+
+.btn__contained {
+  border: none;
+  color: var(--btn-color);
+  background-color: var(--btn-container-bg);
+}
+
+.btn__text {
+  background-color: transparent;
+  border: none;
+}
+
+/* Button */
+
+/* Header */
+
+header.header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex; /* Safari */
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  height: 90px;
+  -webkit-box-shadow: 0px 9.03012px 27.0904px var(--box-shadow),
+    0px 3.38629px 5.64383px var(--box-shadow);
+  box-shadow: 0px 9.03012px 27.0904px var(--box-shadow),
+    0px 3.38629px 5.64383px var(--box-shadow);
+  background-color: var(--header-bg-color);
+  transition: all 0.3s ease-in-out;
+}
+
+.header__content {
+  width: 90%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  background-color: var(--header-bg-color);
+  transition: all 0.3s ease-in-out;
+}
+
+.header__content .logo__container {
+  flex-grow: 0.1;
+  background-color: var(--header-bg-color);
+  transition: all 0.3s ease-in-out;
+}
+
+.logo {
+  display: block;
+  height: 50px;
+  width: 50px;
+  line-height: 50px;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  background-color: var(--logo-bg);
+  color: var(--logo-color);
+  text-align: center;
+  font-weight: 700;
+  font-size: 18px;
+  transition: all 0.3s ease-in-out;
+}
+
+.header__content .input__container {
+  flex-grow: 0.65;
+  background-color: var(--header-bg-color);
+  transition: all 0.3s ease-in-out;
+}
+
+.header__input {
+  width: calc(
+    100% - 34px
+  ); /* 34px = (16px + 16px)padding + (1px + 1px)border */
+  transition: all 0.3s ease-in-out;
+}
+
+.header__content .themeBtn__container {
+  flex-grow: 0.25;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.theme__btn {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  border-radius: 100%;
+  padding: 21px !important;
+  min-width: 40px !important;
+}
+
+.theme__btn i {
+  position: absolute;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.theme__btn i.active {
+  opacity: 1;
+}
+
+.theme__btn i.inactive {
+  opacity: 0;
+}
+
+/* Header */
+
+/* Media Queries */
+
+@media screen and (max-width: 767px) {
+  .header__content .logo__container {
+    flex-grow: 1;
+  }
+
+  .header__content .input__container {
+    display: none;
+  }
+}
+
+/* @media screen and (max-width: 320px) {
+  header.header {
+    height: 40px;
+  }
+} */
+
+/* Media Queries */
