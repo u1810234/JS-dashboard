@@ -39,7 +39,7 @@ loader.classList.add("loader");
 
 const getRequest = async (id = "", searchParam = "") => {
   tbody.append(loader);
-  let url = "http://localhost:3000/api/clients";
+  let url = "https://js-dashboard-api.onrender.com/api/clients";
 
   if (id) {
     url += `/${id}`;
