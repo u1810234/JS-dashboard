@@ -29,7 +29,7 @@
           <input
             class="header__input input"
             type="text"
-            placeholder="Name, Surname, Middle name or contact"
+            placeholder="Full name or contact"
           />
         </div>
 
@@ -41,5 +41,100 @@
         </div>
       </div>
     </header>
+
+    <main class="main container">
+      <div class="main__title">
+        <span class="main__titleText"> Clients </span>
+      </div>
+
+      <div class="mainTable__container">
+        <table>
+          <thead>
+            <tr>
+              <th id="id">
+                <span class="thead__text"> ID </span>
+                <span class="thead__icon asc">
+                  <svg
+                    width="8"
+                    height="8"
+                    viewBox="0 0 8 8"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M3.49691e-07 4L0.705 4.705L3.5 1.915L3.5 8L4.5 8L4.5 1.915L7.29 4.71L8 4L4 -3.49691e-07L3.49691e-07 4Z"
+                      fill="#9873FF"
+                    />
+                  </svg>
+                </span>
+              </th>
+              <th id="clientName">
+                <span class="thead__text"> Full name </span>
+                <span class="thead__icon desc">
+                  <svg
+                    width="8"
+                    height="8"
+                    viewBox="0 0 8 8"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M3.49691e-07 4L0.705 4.705L3.5 1.915L3.5 8L4.5 8L4.5 1.915L7.29 4.71L8 4L4 -3.49691e-07L3.49691e-07 4Z"
+                      fill="#9873FF"
+                    />
+                  </svg>
+                </span>
+              </th>
+              <th id="createdAt">
+                <span class="thead__text"> Created at </span>
+                <span class="thead__icon desc">
+                  <svg
+                    width="8"
+                    height="8"
+                    viewBox="0 0 8 8"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M3.49691e-07 4L0.705 4.705L3.5 1.915L3.5 8L4.5 8L4.5 1.915L7.29 4.71L8 4L4 -3.49691e-07L3.49691e-07 4Z"
+                      fill="#9873FF"
+                    />
+                  </svg>
+                </span>
+              </th>
+              <th id="updatedAt">
+                <span class="thead__text"> Updated at </span>
+                <span class="thead__icon desc">
+                  <svg
+                    width="8"
+                    height="8"
+                    viewBox="0 0 8 8"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M3.49691e-07 4L0.705 4.705L3.5 1.915L3.5 8L4.5 8L4.5 1.915L7.29 4.71L8 4L4 -3.49691e-07L3.49691e-07 4Z"
+                      fill="#9873FF"
+                    />
+                  </svg>
+                </span>
+              </th>
+              <th>
+                <span class="thead__text"> Contacts </span>
+              </th>
+              <th>
+                <span class="thead__text"> Actions </span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="main__action"></div>
+    </main>
+    <div class="snackbar__container">
+      <div id="snackbar"></div>
+    </div>
   </body>
 </html>
