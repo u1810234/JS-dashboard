@@ -27,13 +27,18 @@ const snackbar = document.getElementById("snackbar");
 const OPTION__VALUES = {
   phone: "Phone",
   email: "Email",
-  facebook: "Facebook",
+  linkedin: "LinkedIn",
   telegram: "Telegram",
   other: "Other",
 };
 
 const loader = document.createElement("div");
 loader.classList.add("loader");
+
+const modal = document.querySelector("div");
+
+let contactsQuantity = 0;
+let currentStep = 0;
 
 // Request
 
@@ -66,9 +71,286 @@ const getRequest = async (id = "", searchParam = "") => {
 
 // Request
 
+// Input
+
+const createInput = (
+  classes,
+  nameFor,
+  label,
+  placeholder,
+  value = "",
+  required = true,
+  helpTextValue
+) => {
+  const inputBox = document.createElement("div");
+  inputBox.classList.add("form__input", "my__3");
+
+  const input = document.createElement("input");
+  input.classList.add(...classes);
+  input.type = "text";
+  input.name = nameFor;
+  input.value = value;
+  input.placeholder = placeholder;
+  input.required = required;
+
+  const inputLabel = document.createElement("label");
+  inputLabel.for = nameFor;
+  inputLabel.innerText = label;
+
+  const helpText = document.createElement("span");
+  helpText.innerHTML = helpTextValue;
+
+  inputBox.append(input, inputLabel, helpText);
+
+  return inputBox;
+};
+
+// Input
+
+const createClientContact = (
+  currentDropdownSelectValue,
+  currentContactInfo,
+  contactID
+) => {
+  const contactDataField = document.createElement("div");
+  contactDataField.classList.add("contact__dataField");
+
+  const dropdownContainer = document.createElement("div");
+  dropdownContainer.classList.add("dropdown__container");
+
+  const dropdown = document.createElement("select");
+  dropdown.innerHTML = `
+    <option value="${currentDropdownSelectValue}" selected disabled hidden>${OPTION__VALUES[currentDropdownSelectValue]}</option>
+    <option value="phone">Phone</option>
+    <option value="email">Email</option>
+    <option value="linkedin">LinkedIn</option>
+    <option value="telegram">Telegram</option>
+    <option value="other">other</option>
+  `;
+
+  dropdownContainer.append(dropdown);
+
+  const input = createInput(
+    ["input", "formInput__name"],
+    `contact__${contactID}`,
+    "Enter contact detail",
+    "",
+    "",
+    true,
+    ""
+  );
+
+  const deleteButtonContainer = document.createElement("div");
+  deleteButtonContainer.classList.add("deleteButton__container");
+
+  const deleteButton = createButton(
+    ["btn", "btn__outlined", "btn__text", "btn__icon"],
+    "delete",
+    "",
+    () => console.log("contact will be deleted")
+  );
+
+  deleteButtonContainer.append(deleteButton);
+
+  contactDataField.append(dropdownContainer, input, deleteButtonContainer);
+
+  return contactDataField;
+};
+
+// Modal
+
+const closeModal = () => {
+  document.querySelector(".modal__content").remove();
+  document.querySelector(".modal__header").remove();
+  document.querySelector(".modal").remove();
+  document.querySelector(".modal__container").remove();
+
+  contactsQuantity = 0;
+};
+
+const openModal = (title, content) => {
+  const modal__container = document.createElement("div");
+  const modal = document.createElement("div");
+  const modal__content = document.createElement("div");
+  const modal__header = document.createElement("div");
+  const modal__footer = document.createElement("div");
+  const modalBtn__close = createButton(
+    ["btn", "btn__outlined", "btn__text", "btn__icon"],
+    "exit",
+    "",
+    () => closeModal()
+  );
+
+  const modalBtn__save = createButton(
+    ["btn", "btn__outlined", "btn__text"],
+    "",
+    "Save",
+    () => console.log("Save")
+  );
+
+  const modalBtn__cancel = createButton(
+    ["btn", "btn__outlined", "btn__text"],
+    "",
+    "Cancel",
+    () => closeModal()
+  );
+
+  modal__container.classList.add("modal__container");
+  modal.classList.add("modal");
+  modal__header.classList.add("modal__header");
+
+  modal__header.innerHTML = `
+    <span class="modalHeader__text">${title}</span>
+  `;
+  modal__header.append(modalBtn__close);
+
+  modal__content.classList.add("modal__content");
+  modal__content.append(content);
+
+  modal__footer.classList.add("modal__footer");
+  modal__footer.append(modalBtn__save, modalBtn__cancel);
+
+  modal.append(modal__header, modal__content, modal__footer);
+  modal__container.append(modal);
+
+  document.body.append(modal__container);
+};
+
+// Modal
+
 // Button
 
-const editClient = (id) => {
+const createNewClientContact = (element, id, type, value) => {
+  const contact = createClientContact(type, value, id);
+
+  element.append(contact);
+};
+
+const createFormContent = () => {
+  const firstNameInputBox = createInput(
+    ["input", "formInput__name"],
+    "inputField__name",
+    "First name (required)",
+    "",
+    "",
+    true,
+    ""
+  );
+
+  const lastNameInputBox = createInput(
+    ["input", "formInput__name"],
+    "inputField__last",
+    "Last name (required)",
+    "",
+    "",
+    true,
+    ""
+  );
+
+  const middleNameInputBox = createInput(
+    ["input", "formInput__name"],
+    "inputField__middle",
+    "Middle name (optional)",
+    "",
+    "",
+    true,
+    ""
+  );
+
+  return { firstNameInputBox, lastNameInputBox, middleNameInputBox };
+};
+
+const addNewClientContact = (button, element) => {
+  if (contactsQuantity < 9) {
+    button.classList.remove("invisible");
+    createNewClientContact(element, new Date().getTime(), "phone", "");
+    contactsQuantity += 1;
+  } else {
+    button.classList.add("invisible");
+  }
+};
+
+const createStepper = (
+  firstNameInputBox,
+  lastNameInputBox,
+  middleNameInputBox,
+  contacts
+) => {
+  const stepper = document.createElement("div");
+  stepper.classList.add("stepper");
+
+  const stepperGeneralInfo = document.createElement("div");
+  stepperGeneralInfo.classList.add("stepper__ge");
+
+  stepperGeneralInfo.innerHTML = `
+    <div class="stepperHeader__content">
+      <div class="stepperHeaderContent__circle">1</div>
+      <span class="stepperHeaderContent__text">General</span>
+    </div>
+  `;
+
+  const stepperGeneralInfoContent = document.createElement("div");
+  stepperGeneralInfoContent.classList.add("stepper__content");
+  stepperGeneralInfoContent.append(
+    firstNameInputBox,
+    lastNameInputBox,
+    middleNameInputBox
+  );
+
+  stepperGeneralInfo.append(stepperGeneralInfoContent);
+
+  const stepperContacts = document.createElement("div");
+  stepperContacts.classList.add("stepper__c");
+
+  stepperContacts.innerHTML = `
+    <div class="stepperHeader__content">
+      <div class="stepperHeaderContent__circle">2</div>
+      <span class="stepperHeaderContent__text">Contacts</span>
+    </div>
+  `;
+
+  const stepperContactsContentList = document.createElement("div");
+  stepperContactsContentList.classList.add("stepperContent__list");
+
+  const stepperContactsContent = document.createElement("div");
+  stepperContactsContent.classList.add("stepper__content", "my__3");
+
+  const newClientContact = createButton(
+    ["btn", "btn__text"],
+    "plus",
+    "Add A New Contact",
+    () => addNewClientContact(newClientContact, stepperContactsContentList)
+  );
+
+  stepperContactsContent.append(stepperContactsContentList, newClientContact);
+
+  stepperContacts.append(stepperContactsContent);
+
+  stepper.append(stepperGeneralInfo, stepperContacts);
+
+  return stepper;
+};
+
+const createClient = () => {
+  const form = document.createElement("form");
+  form.classList.add("form");
+
+  const { firstNameInputBox, lastNameInputBox, middleNameInputBox } =
+    createFormContent();
+
+  const stepper = createStepper(
+    firstNameInputBox,
+    lastNameInputBox,
+    middleNameInputBox,
+    []
+  );
+
+  form.append(stepper);
+
+  openModal("Create A Client", form);
+};
+
+const updateClient = (id) => {
   console.log(id);
 };
 
@@ -82,16 +364,17 @@ const createButton = (classes, icon, label, onClick) => {
   const buttonText = document.createElement("span");
 
   button.classList.add(...classes);
-  iconElement.classList.add("icon__image")
-  iconElement.src = `./assets/icons/${icon}.svg`;
+  iconElement.classList.add("icon__image");
   buttonText.classList.add("btn__text");
+
+  if (icon.length > 0) {
+    iconElement.src = `./assets/icons/${icon}.svg`;
+    button.append(iconElement);
+  }
 
   if (label.length > 0) {
     buttonText.innerText = label;
-  }
-
-  if (icon.length > 0 || label.length > 0) {
-    button.append(iconElement, buttonText);
+    button.append(buttonText);
   }
 
   button.addEventListener("click", onClick);
@@ -193,8 +476,6 @@ const createContactIcon = (contact) => {
   return contactElementWithToolTip;
 };
 
-
-
 const placeContacts = (
   contacts,
   contactsClass,
@@ -206,17 +487,17 @@ const placeContacts = (
 
   let max = Math.min(clientsQuantity, contacts.length);
 
-    if (contacts.length > 0) {
-      while (counter < max) {
-        const clientContact = createContactIcon(contacts[counter]);
-        clientContact.classList.add(contactsClass);
+  if (contacts.length > 0) {
+    while (counter < max) {
+      const clientContact = createContactIcon(contacts[counter]);
+      clientContact.classList.add(contactsClass);
 
-        contactsWrapper.append(clientContact);
-        tableDataCell.append(contactsWrapper);
+      contactsWrapper.append(clientContact);
+      tableDataCell.append(contactsWrapper);
 
-        counter++;
-      }
+      counter++;
     }
+  }
 };
 
 const handleExpandContacts = (
@@ -244,7 +525,6 @@ const handleExpandContacts = (
     tableDataCell
   );
 };
-
 
 const loadContacts = (sortBy, sortOrder, searchParam) => {
   getRequest("", searchParam).then((clients) => {
@@ -335,7 +615,7 @@ const loadContacts = (sortBy, sortOrder, searchParam) => {
         ["btn", "btn__text"],
         "edit",
         "Edit",
-        () => editClient(client.id)
+        () => updateClient(client.id)
       );
 
       const deleteClientButton = createButton(
@@ -350,7 +630,7 @@ const loadContacts = (sortBy, sortOrder, searchParam) => {
         deleteClientButton
       );
 
-      tableDataClientActions.append(tableDataClientActionsContent)
+      tableDataClientActions.append(tableDataClientActionsContent);
 
       row.append(tableDataClientContacts, tableDataClientActions);
 
@@ -362,6 +642,15 @@ const loadContacts = (sortBy, sortOrder, searchParam) => {
 };
 
 loadContacts("id", "asc", "");
+
+const addNewClientBtn = createButton(
+  ["btn", "btn__outlined"],
+  "add__client",
+  "Add client",
+  () => createClient()
+);
+
+mainActionSection.append(addNewClientBtn);
 
 theme__switcher.addEventListener("click", function () {
   const active__icon = document.querySelector(".active");
