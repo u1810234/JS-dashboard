@@ -82,6 +82,29 @@ a {
   text-decoration: none;
 }
 
+.error {
+  --input-border-color: #f44336;
+}
+
+input:focus.error,
+input:not(:placeholder-shown):valid {
+  --input-border-color: unset;
+}
+
+input:not(:placeholder-shown):valid ~ .error-text {
+  display: none;
+}
+
+.error-text {
+  color: #f44336;
+  position: absolute;
+  bottom: -20%;
+  left: 16px;
+  transform: translateY(50%) translateX(-2px);
+  font-size: 0.75rem;
+  padding: 0 4px;
+}
+
 .container {
   max-width: 1280px;
 }
@@ -177,6 +200,18 @@ a {
   transition: all 0.2s ease-out;
 }
 
+input:not(:placeholder-shown):valid:focus + label.error-label {
+  color: #1976d2 !important;
+}
+
+input:not(:placeholder-shown):valid:not(:focus) + label.error-label {
+  color: var(--text-main-color) !important;
+}
+
+.error-label {
+  color: #f44336 !important;
+}
+
 /* Form */
 
 .my__3 {
@@ -258,6 +293,15 @@ a {
 
 .btn__icon i.inactive {
   opacity: 0;
+}
+
+button.disabled {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+button.disabled span {
+  color: #ffffff4d !important;
 }
 
 /* Button */
@@ -728,6 +772,85 @@ td {
 
 .dropdown__container + .form__input {
   width: 100% !important;
+}
+
+.snackbar__container {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+}
+
+#snackbar {
+  visibility: hidden;
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  padding: 16px;
+  position: relative;
+  z-index: 1;
+  left: -50%;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+#snackbar.show.error {
+  background-color: #f44336;
+}
+
+#snackbar.show.warning {
+  background-color: #e6b127;
+}
+
+#snackbar.show.success {
+  background-color: #34c759;
+}
+
+@-webkit-keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
 }
 
 /* Main */

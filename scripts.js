@@ -40,7 +40,23 @@ const modal = document.querySelector("div");
 let contactsQuantity = 0;
 let currentStep = 0;
 
-// Request
+let isValid = false;
+
+const openSnackBar = (type, text) => {
+  snackbar.classList.add("show", type);
+  snackbar.innerText = text;
+  setTimeout(() => {
+    snackbar.classList.remove("show", type);
+  }, 3000);
+};
+
+const cleanTable = () => {
+  const rows = document.querySelectorAll(".row");
+
+  rows.forEach((row) => {
+    row.remove();
+  });
+};
 
 const getRequest = async (id = "", searchParam = "") => {
   tbody.append(loader);
@@ -68,10 +84,6 @@ const getRequest = async (id = "", searchParam = "") => {
     };
   }
 };
-
-// Request
-
-// Input
 
 const createInput = (
   classes,
@@ -105,7 +117,16 @@ const createInput = (
   return inputBox;
 };
 
-// Input
+const handleDeleteContact = (element) => {
+  contactsQuantity -= 1;
+  element.remove();
+
+  if (contactsQuantity < 9) {
+    const addNewClientContact = document.querySelector(".add__contact");
+
+    addNewClientContact.classList.remove("disabled");
+  }
+};
 
 const createClientContact = (
   currentDropdownSelectValue,
@@ -133,9 +154,9 @@ const createClientContact = (
   const input = createInput(
     ["input", "formInput__name"],
     `contact__${contactID}`,
-    "Enter contact detail",
     "",
     "",
+    currentContactInfo,
     true,
     ""
   );
@@ -147,7 +168,7 @@ const createClientContact = (
     ["btn", "btn__outlined", "btn__text", "btn__icon"],
     "delete",
     "",
-    () => console.log("contact will be deleted")
+    () => handleDeleteContact(contactDataField)
   );
 
   deleteButtonContainer.append(deleteButton);
@@ -157,9 +178,10 @@ const createClientContact = (
   return contactDataField;
 };
 
-// Modal
-
 const closeModal = () => {
+  document.querySelectorAll(".contact__dataField").forEach((element) => {
+    element.remove();
+  });
   document.querySelector(".modal__content").remove();
   document.querySelector(".modal__header").remove();
   document.querySelector(".modal").remove();
@@ -168,7 +190,112 @@ const closeModal = () => {
   contactsQuantity = 0;
 };
 
-const openModal = (title, content) => {
+const checkInput = (element) => {
+  if (element.querySelector("input").value === "") {
+    element.querySelector("input").classList.add("error");
+    element.querySelector("span").innerHTML = "This field is required";
+    element.querySelector("span").classList.add("error-text");
+    element.querySelector("label").classList.add("error-label");
+
+    return false;
+  }
+
+  element.querySelector("input").classList.remove("error");
+  element.querySelector("span").classList.remove("error-text");
+  element.querySelector("span").innerHTML = "";
+
+  return true;
+};
+
+const ACTION__VALUES = {
+  POST: "added",
+  PATCH: "updated",
+  DELETE: "deleted",
+};
+
+const sendRequest = async (client, method, id = "") => {
+  let url = "https://js-dashboard-api.onrender.com/api/clients";
+
+  if (method !== "POST") {
+    url += `/${id}`;
+  }
+
+  const headersList = {
+    "Content-Type": "application/json",
+  };
+
+  const bodyContent = JSON.stringify(client);
+
+  await fetch(url, {
+    method: method,
+    body: bodyContent,
+    headers: headersList,
+  }).then((response) => {
+    if (response.status === 200 || response.status === 201) {
+      closeModal();
+      openSnackBar("success", `Client successfully ${ACTION__VALUES[method]}`);
+
+      cleanTable();
+
+      loadContacts("id", "desc", "");
+    }
+  });
+};
+
+const handleSave = (method, id = "") => {
+  if (method === "DELETE") {
+    sendRequest({}, method, id);
+
+    return;
+  }
+
+  isValid = true;
+  const name = document.querySelector(".formInput__name");
+  const last = document.querySelector(".formInput__last");
+  const middle = document.querySelector(".formInput__middle");
+
+  const client = {
+    name: name.value,
+    lastName: last.value,
+    surname: middle.value,
+    contacts: [],
+  };
+
+  const contactDataFields = document.querySelectorAll(".contact__dataField");
+  const contactDataFieldsArray = Array.from(contactDataFields);
+
+  contactDataFieldsArray.forEach((contactDataField) => {
+    const contactDataFieldValue = contactDataField.querySelector("input").value;
+    const contactDataFieldName = contactDataField.querySelector("select").value;
+
+    if (!contactDataFieldValue) {
+      isValid = false;
+      contactDataField.querySelector("input").classList.add("error");
+      contactDataField.querySelector("span").innerHTML =
+        "This field is required";
+
+      contactDataField.querySelector("span").classList.add("error-text");
+
+      return;
+    }
+
+    client.contacts.push({
+      type: contactDataFieldName,
+      value: contactDataFieldValue,
+    });
+  });
+
+  if (
+    checkInput(name.parentElement) &&
+    checkInput(last.parentElement) &&
+    checkInput(middle.parentElement) &&
+    isValid
+  ) {
+    sendRequest(client, method, id);
+  }
+};
+
+const openModal = (title, content, method, id = "") => {
   const modal__container = document.createElement("div");
   const modal = document.createElement("div");
   const modal__content = document.createElement("div");
@@ -181,19 +308,14 @@ const openModal = (title, content) => {
     () => closeModal()
   );
 
-  const modalBtn__save = createButton(
-    ["btn", "btn__outlined", "btn__text"],
-    "",
-    "Save",
-    () => console.log("Save")
-  );
-
   const modalBtn__cancel = createButton(
     ["btn", "btn__outlined", "btn__text"],
     "",
     "Cancel",
     () => closeModal()
   );
+
+  let proceedBtn__text = "Save";
 
   modal__container.classList.add("modal__container");
   modal.classList.add("modal");
@@ -205,20 +327,29 @@ const openModal = (title, content) => {
   modal__header.append(modalBtn__close);
 
   modal__content.classList.add("modal__content");
+
   modal__content.append(content);
 
   modal__footer.classList.add("modal__footer");
-  modal__footer.append(modalBtn__save, modalBtn__cancel);
+
+  if (method === "DELETE") {
+    proceedBtn__text = "Delete";
+  }
+
+  const modalBtn__proceed = createButton(
+    ["btn", "btn__outlined", "btn__text"],
+    "",
+    proceedBtn__text,
+    () => handleSave(method, id)
+  );
+
+  modal__footer.append(modalBtn__proceed, modalBtn__cancel);
 
   modal.append(modal__header, modal__content, modal__footer);
   modal__container.append(modal);
 
   document.body.append(modal__container);
 };
-
-// Modal
-
-// Button
 
 const createNewClientContact = (element, id, type, value) => {
   const contact = createClientContact(type, value, id);
@@ -238,7 +369,7 @@ const createFormContent = () => {
   );
 
   const lastNameInputBox = createInput(
-    ["input", "formInput__name"],
+    ["input", "formInput__last"],
     "inputField__last",
     "Last name (required)",
     "",
@@ -248,9 +379,9 @@ const createFormContent = () => {
   );
 
   const middleNameInputBox = createInput(
-    ["input", "formInput__name"],
+    ["input", "formInput__middle"],
     "inputField__middle",
-    "Middle name (optional)",
+    "Middle name (required)",
     "",
     "",
     true,
@@ -262,11 +393,12 @@ const createFormContent = () => {
 
 const addNewClientContact = (button, element) => {
   if (contactsQuantity < 9) {
-    button.classList.remove("invisible");
+    button.classList.remove("disabled");
+
     createNewClientContact(element, new Date().getTime(), "phone", "");
     contactsQuantity += 1;
   } else {
-    button.classList.add("invisible");
+    button.classList.add("disabled");
   }
 };
 
@@ -315,8 +447,20 @@ const createStepper = (
   const stepperContactsContent = document.createElement("div");
   stepperContactsContent.classList.add("stepper__content", "my__3");
 
+  contactsQuantity = 0;
+
+  contacts.map((contact) => {
+    contactsQuantity++;
+    createNewClientContact(
+      stepperContactsContentList,
+      new Date().getTime(),
+      contact.type.toLowerCase(),
+      contact.value
+    );
+  });
+
   const newClientContact = createButton(
-    ["btn", "btn__text"],
+    ["btn", "btn__text", "add__contact"],
     "plus",
     "Add A New Contact",
     () => addNewClientContact(newClientContact, stepperContactsContentList)
@@ -347,15 +491,55 @@ const createClient = () => {
 
   form.append(stepper);
 
-  openModal("Create A Client", form);
+  openModal("Create A Client", form, "POST", "");
 };
 
 const updateClient = (id) => {
-  console.log(id);
+  getRequest(id, "")
+    .then((client) => {
+      const form = document.createElement("form");
+      form.classList.add("form");
+
+      const { firstNameInputBox, lastNameInputBox, middleNameInputBox } =
+        createFormContent();
+
+      const stepper = createStepper(
+        firstNameInputBox,
+        lastNameInputBox,
+        middleNameInputBox,
+        client.contacts
+      );
+
+      form.append(stepper);
+
+      openModal("Edit A Client", form, "PATCH", id);
+
+      firstNameInputBox.querySelector("input").value = client.name;
+      lastNameInputBox.querySelector("input").value = client.lastName;
+      middleNameInputBox.querySelector("input").value = client.surname;
+    })
+    .catch(() => {
+      openSnackBar(
+        "error",
+        "Error, no connection to the server, please try again later."
+      );
+    });
 };
 
 const deleteClient = (id) => {
-  console.log(id);
+  getRequest(id, "")
+    .then((client) => {
+      const form = document.createElement("span");
+      form.innerHTML = `Are you sure you want to delete ${client.name}?`;
+
+      openModal("Delete A Client", form, "DELETE", id);
+    })
+    .catch(() => {
+      openSnackBar(
+        "error",
+        "Error, no connection to the server, please try again later."
+      );
+    });
 };
 
 const createButton = (classes, icon, label, onClick) => {
@@ -380,16 +564,6 @@ const createButton = (classes, icon, label, onClick) => {
   button.addEventListener("click", onClick);
 
   return button;
-};
-
-// Button
-
-const cleanTable = () => {
-  const rows = document.querySelectorAll(".row");
-
-  rows.forEach((row) => {
-    row.remove();
-  });
 };
 
 const compareByField = (field, sortOrder) => (a, b) => {
