@@ -348,6 +348,8 @@ const openModal = (title, content, method, id = "") => {
   modal.append(modal__header, modal__content, modal__footer);
   modal__container.append(modal);
 
+  loader.remove();
+
   document.body.append(modal__container);
 };
 
@@ -840,4 +842,13 @@ theme__switcher.addEventListener("click", function () {
   document.body.classList.toggle("theme__dark");
 
   localStorage.setItem("theme", document.body.classList.value);
+});
+
+searchInput.addEventListener("input", () => {
+  clearTimeout(searchInputTimer);
+
+  searchInputTimer = setTimeout(() => {
+    currentSearchParam = searchInput.value;
+    loadContacts(currentSortType, currentSortOrder, currentSearchParam);
+  }, 300);
 });
