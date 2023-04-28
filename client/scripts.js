@@ -121,7 +121,7 @@ const fillClientData = (id) => {
 
       const thumbIcon = document.createElement("img");
       thumbIcon.classList.add("thumbIcon");
-      thumbIcon.src = `../assets/${contact.type}.svg`;
+      thumbIcon.src = `../assets/icons/${contact.type}.svg`;
 
       const cardText = document.createElement("span");
       cardText.classList.add("card__text");
